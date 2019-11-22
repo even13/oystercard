@@ -30,8 +30,16 @@ describe Oystercard do
   describe "#touch_in" do
     it "starts a journey when touching in" do
       subject.top_up(10)
-      subject.touch_in station
-      expect(subject.in_journey?).to eq true
+      expect(subject).to respond_to(:touch_in)
+    end
+
+    context "user touches in twice" do
+      it "charges a penalty fare" do
+        subject.top_up(10)
+        subject.touch_in(station)
+        penalty = Journey::PENALTY_FARE
+        expect{subject.touch_in(station2)}.to change { subject.balance }.by(-penalty)
+      end
     end
 
     it "raises an error if balance at touch_in < #{Oystercard::MINIMUM_FARE}" do
@@ -50,6 +58,13 @@ describe Oystercard do
       expect { subject.touch_out(station2) }.to raise_error "unable to touch out"
     end
 
+    context "user touches out without touching in" do
+      it "charges a penalty fare" do
+        penalty = Journey::PENALTY_FARE
+        expect{subject.touch_out(station2)}.to change { subject.balance }.by(-penalty)
+      end
+    end
+
     context "on a journey" do
       before :each do
         subject.top_up(10)
@@ -59,11 +74,6 @@ describe Oystercard do
       it "should deduct the minimum fare from the balance" do
         min = Oystercard::MINIMUM_FARE
         expect { subject.touch_out(station2) }.to change { subject.balance }.by(-min)
-      end
-
-      it "should set in_journey to false" do
-        subject.touch_out(station2)
-        expect(subject.in_journey?).to eq false
       end
 
       it "should erase the entry station upon touch_out" do
@@ -78,12 +88,6 @@ describe Oystercard do
 
     end
 
-  end
-
-  describe "#in_journey?" do
-    it "should initially not be in journey before touching in" do
-      expect(subject.in_journey?).to eq false
-    end
   end
 
 end

@@ -33,9 +33,6 @@ describe Journey do
   end
 
   describe "#fare" do
-    it "should be 0 if not travelling" do
-      expect(journey.fare).to eq 0
-    end
 
     it "should return minimum fare if journey is complete" do
       journey.start(station1)

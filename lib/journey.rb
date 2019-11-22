@@ -4,6 +4,11 @@ attr_reader :entry, :exit
 MINIMUM_FARE = 1
 PENALTY_FARE = 6
 
+  def initialize
+    @entry = nil
+    @exit = nil
+  end
+
   def start(station)
     @entry = station
   end
@@ -17,8 +22,6 @@ PENALTY_FARE = 6
   end
 
   def fare
-    return MINIMUM_FARE if complete?
-    return PENALTY_FARE unless @entry.nil? && @exit.nil?
-    0
+    complete? ? MINIMUM_FARE : PENALTY_FARE
   end
 end
