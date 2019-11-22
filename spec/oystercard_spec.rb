@@ -46,18 +46,14 @@ describe Oystercard do
       expect { subject.touch_in station }.to raise_error ("Please top up before travelling")
     end
 
-    it "records entry station" do
-      subject.top_up 10
-      subject.touch_in station
-      expect(subject.entry_station).to eq station
-    end
-  end
+  #   it "records entry station" do
+  #     subject.top_up 10
+  #     subject.touch_in station
+  #     expect(subject.entry_station).to eq station
+  #   end
+   end
 
   describe "#touch_out" do
-    it "throws an error if touch out without touch in" do
-      expect { subject.touch_out(station2) }.to raise_error "unable to touch out"
-    end
-
     context "user touches out without touching in" do
       it "charges a penalty fare" do
         penalty = Journey::PENALTY_FARE
@@ -68,7 +64,7 @@ describe Oystercard do
     context "on a journey" do
       before :each do
         subject.top_up(10)
-        subject.touch_in station
+        subject.touch_in(station)
       end
 
       it "should deduct the minimum fare from the balance" do
@@ -76,15 +72,15 @@ describe Oystercard do
         expect { subject.touch_out(station2) }.to change { subject.balance }.by(-min)
       end
 
-      it "should erase the entry station upon touch_out" do
-        subject.touch_out(station2)
-        expect(subject.entry_station).to eq nil
-      end
+      # it "should erase the entry station upon touch_out" do
+      #   subject.touch_out(station2)
+      #   expect(subject.entry_station).to eq nil
+      # end
 
-      it "should add the journey to the history" do
-        subject.touch_out(station2)
-        expect(subject.history).to eq [{entry: station , exit: station2}]
-      end
+      # it "should add the journey to the history" do
+      #   subject.touch_out(station2)
+      #   expect(subject.history).to eq [{entry: station , exit: station2}]
+      # end
 
     end
 

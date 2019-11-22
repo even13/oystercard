@@ -11,7 +11,7 @@ class Oystercard
     @balance = 0
     @history = []
     @journey_class = journey_class
-    @in_journey = false
+    @journey = nil
   end
 
   def top_up(value)
@@ -19,22 +19,26 @@ class Oystercard
     @balance += value
   end
 
-  def touch_in station
+  def touch_in (entry_station)
+    deduct(@journey.fare) unless @journey.nil?
     fail "Please top up before travelling" if @balance < MINIMUM_FARE
-    @history.unshift({ entry: station })
-    @journey = @journey_class.new.start(station)
-    @in_journey = true
+    #@history.unshift({ entry: station })
+    @journey = @journey_class.new
+    @journey.start(entry_station)
   end
 
   def touch_out(exit_station)
-    fail "unable to touch out" unless in_journey?
+    @journey = @journey_class.new if @journey.nil?
+    @journey.finish(exit_station)
     deduct(@journey.fare)
-    @history[0][:exit] = exit_station
+      #@history[0][:exit] = exit_station
+    @history << @journey if @journey.complete?
+    @journey = nil
   end
 
-  def entry_station
-    @history[0][:entry] if in_journey?
-  end
+  # def entry_station
+  #   @history[0][:entry] if in_journey?
+  # end
 
   private
   # attr_reader :in_journey
@@ -42,9 +46,9 @@ class Oystercard
     @balance -= fare
   end
 
-  def in_journey?
-    return false if @history.empty?
-    !@history[0][:entry].nil? && @history[0][:exit].nil?
-  end
+  # def in_journey?
+  #   return false if @history.empty?
+  #   !@history[0][:entry].nil? && @history[0][:exit].nil?
+  # end
 
 end

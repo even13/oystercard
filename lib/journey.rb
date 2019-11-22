@@ -22,6 +22,6 @@ PENALTY_FARE = 6
   end
 
   def fare
-    complete? ? MINIMUM_FARE : PENALTY_FARE
+    return complete? ? MINIMUM_FARE : PENALTY_FARE
   end
 end
