@@ -4,13 +4,9 @@ attr_reader :entry, :exit
 MINIMUM_FARE = 1
 PENALTY_FARE = 6
 
-  def initialize
-    @entry = nil
-    @exit = nil
-  end
-
-  def start(station)
+  def initialize(station = nil)
     @entry = station
+    @exit = nil
   end
 
   def complete?

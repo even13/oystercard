@@ -22,17 +22,18 @@ class Oystercard
   def touch_in (entry_station)
     deduct(@journey.fare) unless @journey.nil?
     fail "Please top up before travelling" if @balance < MINIMUM_FARE
-    #@history.unshift({ entry: station })
-    @journey = @journey_class.new
-    @journey.start(entry_station)
+    @journey = @journey_class.new(entry_station)
   end
 
   def touch_out(exit_station)
     @journey = @journey_class.new if @journey.nil?
     @journey.finish(exit_station)
     deduct(@journey.fare)
-      #@history[0][:exit] = exit_station
-    @history << @journey if @journey.complete?
+    record(@journey)
+  end
+
+  def record(journey)
+    @history << journey if journey.complete?
     @journey = nil
   end
 
